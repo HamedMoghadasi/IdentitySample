@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using IdentitySample.DTOs.Users;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,9 +14,11 @@ namespace IdentitySample.Controllers
     public class UsersController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
-        public UsersController(UserManager<IdentityUser> userManager)
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public UsersController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -24,6 +27,33 @@ namespace IdentitySample.Controllers
             return _userManager.Users.AsEnumerable();
         }
 
-        public IEnumerable<>
+        [HttpPost]
+        public async Task<IActionResult> AssignRole([FromBody] AssignRoleRequest assignRoleRequest)
+        {
+            try
+            {
+                var theUser = await _userManager.FindByIdAsync(assignRoleRequest.UserId);
+                foreach (var roleId in assignRoleRequest.Roles)
+                {
+                    var theRole = await _roleManager.FindByIdAsync(roleId);
+                    if (theUser != null && theRole != null)
+                    {
+                        var IsUserInTheRole = await _userManager.IsInRoleAsync(theUser, theRole.Name);
+                        if (!IsUserInTheRole)
+                        {
+                            await _userManager.AddToRoleAsync(theUser, theRole.Name);
+                        }
+                    }
+                }
+                return Ok("added");
+            }
+            catch (Exception)
+            {
+                return BadRequest("500");
+                throw;
+            }
+            
+            
+        }
     }
 }
