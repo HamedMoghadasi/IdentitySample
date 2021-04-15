@@ -5,7 +5,8 @@
     ViewData["Title"] = "Privacy Policy";
 }
 <h1>@ViewData["Title"]</h1>
-@if (RazorPermission.IsGranted("Permission", "AccessParagraph"))
+
+@if (RazorPermission.IsGranted("AccessParagraph"))
 {
     <p>This paragraph is displayed because you fulfilled PolicyName.</p>
 }

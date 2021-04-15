@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using IdentitySample.Filters;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace IdentitySample.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Permission("Permission", "AccessValues")]
     public class ValuesController : ControllerBase
     {
         // GET: api/<ValuesController>

@@ -11,10 +11,18 @@ namespace IdentitySample.Filters
 {
     public class Permission : TypeFilterAttribute
     {
-        public Permission(string claimType, string claimValue) : base(typeof(PermissionFilter))
+        private string _claimValue;
+        private string _claimType;
+
+        public Permission(string claimType , string claimValue) : base(typeof(PermissionFilter))
         {
+            _claimValue = claimValue;
+            _claimType = claimType;
             Arguments = new object[] { new Claim(claimType, claimValue) };
         }
+
+        public string claimValue { get { return _claimValue; } private set { _claimValue = value; } }
+        public string claimType { get { return _claimType; } private set { _claimType = value; } }
     }
 
     public class PermissionFilter : IAuthorizationFilter

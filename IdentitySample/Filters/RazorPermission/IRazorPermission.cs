@@ -7,6 +7,7 @@ namespace IdentitySample.Filters.RazorPermission
 {
     public interface IRazorPermission
     {
+        bool IsGranted(string claimValue);
         bool IsGranted(string claimType , string claimValue);
     }
 }

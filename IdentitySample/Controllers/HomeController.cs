@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace IdentitySample.Controllers
 {
-    [Permission("Permission","AccessHome")]
+    [Permission("Permission" ,"AccessHome")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

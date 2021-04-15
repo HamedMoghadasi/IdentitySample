@@ -47,5 +47,10 @@ namespace IdentitySample.Filters.RazorPermission
                 return result;
             
         }
+
+        public bool IsGranted(string claimValue)
+        {
+            return IsGranted("Permission", claimValue);
+        }
     }
 }

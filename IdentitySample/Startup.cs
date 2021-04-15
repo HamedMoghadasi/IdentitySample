@@ -1,5 +1,6 @@
 using IdentitySample.Data;
 using IdentitySample.Filters.RazorPermission;
+using IdentitySample.Middlewares;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -69,7 +70,7 @@ namespace IdentitySample
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseClaimsDetector();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
