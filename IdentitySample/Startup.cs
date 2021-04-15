@@ -1,6 +1,8 @@
 using IdentitySample.Data;
+using IdentitySample.Filters.RazorPermission;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
@@ -31,11 +33,19 @@ namespace IdentitySample
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
+            services.AddHttpContextAccessor();
 
             services.AddIdentity<IdentityUser,IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+           
             services.AddControllersWithViews().AddNewtonsoftJson();
             services.AddRazorPages();
+            services.AddScoped<IRazorPermission, RazorPermission>();
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = new PathString("/identity/Account/Login");
+                options.AccessDeniedPath = new PathString("/identity/Account/AccessDenied");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

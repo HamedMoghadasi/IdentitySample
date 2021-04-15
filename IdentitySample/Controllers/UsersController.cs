@@ -33,7 +33,12 @@ namespace IdentitySample.Controllers
             try
             {
                 var theUser = await _userManager.FindByIdAsync(assignRoleRequest.UserId);
-                foreach (var roleId in assignRoleRequest.Roles)
+                var allRoles = _roleManager.Roles.AsEnumerable().ToList();
+                var selectedRoles = assignRoleRequest.Roles;
+
+                var notSelectedRoles = allRoles.Select(role => role.Id).Except(selectedRoles).ToList();
+
+                foreach (var roleId in selectedRoles)
                 {
                     var theRole = await _roleManager.FindByIdAsync(roleId);
                     if (theUser != null && theRole != null)
@@ -45,15 +50,26 @@ namespace IdentitySample.Controllers
                         }
                     }
                 }
-                return Ok("added");
+
+                foreach (var roleId in notSelectedRoles)
+                {
+                    var theRole = await _roleManager.FindByIdAsync(roleId);
+                    if (theUser != null && theRole != null)
+                    {
+                        var IsUserInTheRole = await _userManager.IsInRoleAsync(theUser, theRole.Name);
+                        if (IsUserInTheRole)
+                        {
+                            await _userManager.RemoveFromRoleAsync(theUser, theRole.Name);
+                        }
+                    }
+                }
+                return Ok("Successful!");
             }
             catch (Exception)
             {
                 return BadRequest("500");
                 throw;
             }
-            
-            
         }
     }
 }
