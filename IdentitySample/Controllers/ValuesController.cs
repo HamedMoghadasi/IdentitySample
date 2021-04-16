@@ -1,4 +1,5 @@
 ﻿using IdentitySample.Filters;
+using IdentitySample.Security;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,12 @@ namespace IdentitySample.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Permission("Permission", "AccessValues")]
+    [Permission(GlobalClaimsType.Permission, GlobalClaimsValue.AccessValue)]
     public class ValuesController : ControllerBase
     {
         // GET: api/<ValuesController>
         [HttpGet]
+        [Permission(GlobalClaimsType.Permission, GlobalClaimsValue.CanGetAllValue)]
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };

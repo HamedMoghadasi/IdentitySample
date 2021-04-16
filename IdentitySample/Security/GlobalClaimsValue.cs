@@ -10,5 +10,6 @@ namespace IdentitySample.Security
         public const string AccessHome = "AccessHome";
         public const string AccessPrivacy = "AccessPrivacy";
         public const string AccessValue = "AccessValue";
+        public const string CanGetAllValue = "CanGetAllValue";
     }
 }

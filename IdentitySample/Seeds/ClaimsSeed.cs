@@ -10,85 +10,109 @@ using System.Threading.Tasks;
 
 namespace IdentitySample.Seeds
 {
-        public class ClaimsSeed: ISeed
+    public class ClaimsSeed : ISeed
+    {
+        private readonly ApplicationDbContext _context;
+        public ClaimsSeed(ApplicationDbContext context)
         {
-            public void Seed(ApplicationDbContext context)
+            _context = context;
+        }
+        public void Seed()
+        {
+            var claims = new List<Claims>();
+
+            var controllers = Assembly.GetExecutingAssembly()
+                .GetExportedTypes()
+                .Where(i => typeof(ControllerBase).IsAssignableFrom(i))
+                .Select(i => i);
+
+            FindControllersClaims(claims, controllers);
+            FindActionsClaims(claims, controllers);
+            FindRazorsClaims(claims, controllers);
+
+            InsertClaims(claims);
+        }
+
+        private void InsertClaims(List<Claims> claims)
+        {
+            var dbClaims = _context.Claims;
+            foreach (var item in claims)
             {
-                var claims = new List<Claims>();
-
-                var controllers = Assembly.GetExecutingAssembly()
-                    .GetExportedTypes()
-                    .Where(i => typeof(ControllerBase).IsAssignableFrom(i))
-                    .Select(i => i);
-
-                FindControllersClaims(claims, controllers);
-                FindActionsClaims(claims, controllers);
-                FindRazorsClaims(claims, controllers);
-
-
-            }
-
-            private static void FindActionsClaims(List<Claims> claims, IEnumerable<Type> controllers)
-            {
-                foreach (Type controller in controllers)
+                if (!IsExisted(dbClaims, item))
                 {
-                    var actions = controller.GetMethods().Where(i => i.DeclaringType.IsSubclassOf(typeof(ControllerBase)) && i.CustomAttributes.Count() > 0).ToList();
-                    foreach (var action in actions)
-                    {
-                        var permissionAttributes = action.GetCustomAttributes<Permission>(false);
-                        foreach (var attr in permissionAttributes)
-                        {
-                            claims.Add(new Claims
-                            {
-                                ActionName = action.Name,
-                                ControllerName = action.DeclaringType.Name,
-                                ClaimValue = attr.claimValue,
-                                ClaimType = attr.claimType,
-                            });
-                        }
-                    }
+                    _context.Claims.Add(item);
                 }
             }
+            _context.SaveChanges();
+        }
 
-            private static void FindControllersClaims(List<Claims> claims, IEnumerable<Type> controllers)
+        private bool IsExisted(Microsoft.EntityFrameworkCore.DbSet<Claims> dbClaims, Claims item)
+        {
+            return dbClaims.Any(p => p.ControllerName == item.ControllerName && p.ActionName == item.ActionName && p.ClaimType == item.ClaimType && p.ClaimValue == item.ClaimValue);
+        }
+
+        private void FindActionsClaims(List<Claims> claims, IEnumerable<Type> controllers)
+        {
+            foreach (Type controller in controllers)
             {
-                foreach (Type controller in controllers)
+                var actions = controller.GetMethods().Where(i => i.DeclaringType.IsSubclassOf(typeof(ControllerBase)) && i.CustomAttributes.Count() > 0).ToList();
+                foreach (var action in actions)
                 {
-                    var permissionAttributes = controller.GetCustomAttributes<Permission>(false);
-
+                    var permissionAttributes = action.GetCustomAttributes<Permission>(false);
                     foreach (var attr in permissionAttributes)
                     {
                         claims.Add(new Claims
                         {
-                            ControllerName = controller.Name,
+                            ActionName = action.Name,
+                            ControllerName = action.DeclaringType.Name,
                             ClaimValue = attr.claimValue,
                             ClaimType = attr.claimType,
                         });
                     }
                 }
             }
+        }
 
-            private static void FindRazorsClaims(List<Claims> claims, IEnumerable<Type> controllers)
+        private void FindControllersClaims(List<Claims> claims, IEnumerable<Type> controllers)
+        {
+            foreach (Type controller in controllers)
             {
-                foreach (Type controller in controllers)
+                var permissionAttributes = controller.GetCustomAttributes<Permission>(false);
+
+                foreach (var attr in permissionAttributes)
                 {
-                    var actions = controller.GetMethods().Where(i => i.DeclaringType.IsSubclassOf(typeof(ControllerBase)) && i.CustomAttributes.Count() > 0).ToList();
-                    foreach (var action in actions)
+                    claims.Add(new Claims
                     {
-                        var permissionAttributes = action.GetCustomAttributes<RazorPermission>(false);
-                        foreach (var attr in permissionAttributes)
+                        ActionName = string.Empty,
+                        ControllerName = controller.Name,
+                        ClaimValue = attr.claimValue,
+                        ClaimType = attr.claimType,
+                    });
+                }
+            }
+        }
+
+        private void FindRazorsClaims(List<Claims> claims, IEnumerable<Type> controllers)
+        {
+            foreach (Type controller in controllers)
+            {
+                var actions = controller.GetMethods().Where(i => i.DeclaringType.IsSubclassOf(typeof(ControllerBase)) && i.CustomAttributes.Count() > 0).ToList();
+                foreach (var action in actions)
+                {
+                    var permissionAttributes = action.GetCustomAttributes<RazorPermission>(false);
+                    foreach (var attr in permissionAttributes)
+                    {
+                        claims.Add(new Claims
                         {
-                            claims.Add(new Claims
-                            {
-                                ActionName = action.Name,
-                                ControllerName = action.DeclaringType.Name,
-                                ClaimValue = attr.claimValue,
-                                ClaimType = attr.claimType,
-                            });
-                        }
+                            ActionName = action.Name,
+                            ControllerName = action.DeclaringType.Name,
+                            ClaimValue = attr.claimValue,
+                            ClaimType = attr.claimType,
+                        });
                     }
                 }
             }
         }
     }
+}
 

@@ -32,7 +32,7 @@ namespace IdentitySample
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddHttpContextAccessor();
 
@@ -43,8 +43,8 @@ namespace IdentitySample
             services.AddRazorPages();
             services.AddScoped<IRazorSecurity, RazorSecurity>();
             services.AddScoped<ISeed, ClaimsSeed>();
-            services.AddScoped<ISeed, UsersSeed>();
             services.AddScoped<ISeed, RolesSeed>();
+            services.AddScoped<ISeed, UsersSeed>();
             services.AddScoped<ISeed, RoleClaimsSeed>();
             services.ConfigureApplicationCookie(options =>
             {

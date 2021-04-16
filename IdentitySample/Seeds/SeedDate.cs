@@ -19,7 +19,7 @@ namespace IdentitySample.Utils
                 var services = scope.ServiceProvider;
                 var context = services.GetService<ApplicationDbContext>();
                 services.GetServices<ISeed>().ToList().ForEach(seeder => {
-                    seeder.Seed(context);
+                    seeder.Seed();
                 });
             }
             return host;

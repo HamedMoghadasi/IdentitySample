@@ -4,6 +4,6 @@ namespace IdentitySample.Seeds
 {
     public interface ISeed
     {
-        void Seed(ApplicationDbContext context);
+        void Seed();
     }
 }
