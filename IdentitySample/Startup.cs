@@ -1,6 +1,6 @@
 using IdentitySample.Data;
-using IdentitySample.Filters.RazorPermission;
-using IdentitySample.Middlewares;
+using IdentitySample.Filters.RazorSecurity;
+using IdentitySample.Seeds;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -41,7 +41,11 @@ namespace IdentitySample
            
             services.AddControllersWithViews().AddNewtonsoftJson();
             services.AddRazorPages();
-            services.AddScoped<IRazorPermission, RazorPermission>();
+            services.AddScoped<IRazorSecurity, RazorSecurity>();
+            services.AddScoped<ISeed, ClaimsSeed>();
+            services.AddScoped<ISeed, UsersSeed>();
+            services.AddScoped<ISeed, RolesSeed>();
+            services.AddScoped<ISeed, RoleClaimsSeed>();
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = new PathString("/identity/Account/Login");
@@ -70,7 +74,6 @@ namespace IdentitySample
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseClaimsDetector();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

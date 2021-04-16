@@ -1,12 +1,13 @@
-﻿@using IdentitySample.Filters.RazorPermission
-@inject IRazorPermission RazorPermission
+﻿@using IdentitySample.Filters.RazorSecurity
+@using IdentitySample.Security
+@inject IRazorSecurity Permission
 
 @{
     ViewData["Title"] = "Privacy Policy";
 }
 <h1>@ViewData["Title"]</h1>
 
-@if (RazorPermission.IsGranted("AccessParagraph"))
+@if (Permission.IsGranted(RazorClaimsValue.AccessParagraph))
 {
     <p>This paragraph is displayed because you fulfilled PolicyName.</p>
 }

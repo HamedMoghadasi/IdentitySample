@@ -1,5 +1,6 @@
 ﻿using IdentitySample.Filters;
 using IdentitySample.Models;
+using IdentitySample.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace IdentitySample.Controllers
 {
-    [Permission("Permission" ,"AccessHome")]
+    [Permission(GlobalClaimsType.Permission, GlobalClaimsValue.AccessHome)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -26,7 +27,8 @@ namespace IdentitySample.Controllers
             return View();
         }
 
-        [Permission("Permission", "AccessPrivacy")]
+        [Permission(GlobalClaimsType.Permission, GlobalClaimsValue.AccessPrivacy)]
+        [RazorPermission(GlobalClaimsType.Permission, RazorClaimsValue.AccessParagraph)]
         public IActionResult Privacy()
         {
             return View();
