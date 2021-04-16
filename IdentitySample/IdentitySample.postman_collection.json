@@ -1,0 +1,255 @@
+{
+	"info": {
+		"_postman_id": "0f1a0f30-52df-439b-bf27-5c4cffd3daa1",
+		"name": "IdentitySample",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "GetUsers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AssignRoles",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"userId\": \"1eca3ff4-2fc5-47e2-8b58-f0d7c33d68d9\",\n\t\"roles\": [\n\t\t\"5766b91b-0f92-471b-8f71-824d164a5283\",\n\t\t\"b9af4ad3-b39e-43df-bb1b-bd591ef628c1\"\n\t\t]\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Roles",
+			"item": [
+				{
+					"name": "Get",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/roles",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"roles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"fake\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/roles",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"roles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/roles?id=5766b91b-0f92-471b-8f71-824d164a5283",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"roles"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "5766b91b-0f92-471b-8f71-824d164a5283"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/roles?id=364f776b-cd03-4a1b-8a04-da4e245ba439",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"roles"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "364f776b-cd03-4a1b-8a04-da4e245ba439"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetRoleClaims",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"RoleName\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/roles/GetRoleClaims",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"roles",
+								"GetRoleClaims"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AddRemoveRoleClaim",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"roleName\": \"admin\",\n\t\"claimType\":\"Permission\",\n\t\"claimValue\":\"AccessPrivacy\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/roles/HandleRoleClaim",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"roles",
+								"HandleRoleClaim"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
