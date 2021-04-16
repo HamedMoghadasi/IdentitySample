@@ -33,20 +33,29 @@ namespace IdentitySample.Seeds
             InsertClaims(claims);
         }
 
-        private void InsertClaims(List<Claims> claims)
+        private void InsertClaims(List<Claims> claimFilters)
         {
-            var dbClaims = _context.Claims;
-            foreach (var item in claims)
+            var dbClaims = _context.Claims.ToList();
+            var removedClaimsFilters = dbClaims.Except(claimFilters,new ClaimsComparer()).ToList();
+            foreach (var item in claimFilters)
             {
                 if (!IsExisted(dbClaims, item))
                 {
                     _context.Claims.Add(item);
                 }
             }
+            foreach (var item in removedClaimsFilters)
+            {
+                if (IsExisted(dbClaims, item))
+                {
+                    _context.Claims.Remove(item);
+                    
+                }
+            }
             _context.SaveChanges();
         }
 
-        private bool IsExisted(Microsoft.EntityFrameworkCore.DbSet<Claims> dbClaims, Claims item)
+        private bool IsExisted(IList<Claims> dbClaims, Claims item)
         {
             return dbClaims.Any(p => p.ControllerName == item.ControllerName && p.ActionName == item.ActionName && p.ClaimType == item.ClaimType && p.ClaimValue == item.ClaimValue);
         }

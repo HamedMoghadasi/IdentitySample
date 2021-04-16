@@ -21,11 +21,14 @@ namespace IdentitySample.Seeds
         {
             var claims = _context.Claims.Select(item => new Claim(item.ClaimType, item.ClaimValue)).ToList();
             var adminRole = _roleManager.FindByNameAsync("admin").Result;
+            var adminClaims = _roleManager.GetClaimsAsync(adminRole).Result;
+
             claims.ForEach(item =>
             {
-                var result = _roleManager.AddClaimAsync(adminRole, item).Result;
+                if (!adminClaims.Any(i => item.Type == item.Type && item.Value == item.Value)) { 
+                    var result = _roleManager.AddClaimAsync(adminRole, item).Result;
+                }
             });
-
 
             Console.WriteLine("Role Claims Seed");
         }

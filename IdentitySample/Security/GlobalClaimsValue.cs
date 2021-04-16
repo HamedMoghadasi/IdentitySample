@@ -11,5 +11,6 @@ namespace IdentitySample.Security
         public const string AccessPrivacy = "AccessPrivacy";
         public const string AccessValue = "AccessValue";
         public const string CanGetAllValue = "CanGetAllValue";
+        public const string CanHandleRoleClaim = "CanHandleRoleClaim";
     }
 }
