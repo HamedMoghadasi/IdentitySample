@@ -1,13 +1,8 @@
 ﻿using IdentitySample.Data;
 using IdentitySample.DTOs.Roles;
-using IdentitySample.Filters;
-using IdentitySample.Models;
-using IdentitySample.Security;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+using Authorization.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;

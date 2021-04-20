@@ -1,6 +1,4 @@
-using System;
-
-namespace IdentitySample.Models
+namespace Authorization.Models
 {
     public class ErrorViewModel
     {

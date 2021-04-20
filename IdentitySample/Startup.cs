@@ -1,24 +1,18 @@
 using IdentitySample.Data;
-using IdentitySample.Filters;
-using IdentitySample.Filters.RazorSecurity;
-using IdentitySample.Middlewares;
-using IdentitySample.Security;
-using IdentitySample.Seeds;
+using Authorization.Filters.RazorSecurity;
+using Authorization.Middlewares;
+using Authorization.Utils;
+using Authorization.Seeds;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using IdentitySample.Authorizations.Extensions;
 
 namespace IdentitySample
 {
@@ -39,30 +33,14 @@ namespace IdentitySample
                     Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
             
             services.AddDatabaseDeveloperPageExceptionFilter();
-            services.AddHttpContextAccessor();
+            
 
             services.AddIdentity<IdentityUser,IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
            
-            services.AddControllersWithViews().AddNewtonsoftJson();
+            services.AddControllersWithViews();
 
-
-            services.AddRazorPages();
-
-
-            services.AddScoped<IRazorSecurity, RazorSecurity>();
-            services.AddScoped<ISeed, ClaimsSeed>();
-            services.AddScoped<ISeed, RolesSeed>();
-            services.AddScoped<ISeed, UsersSeed>();
-            services.AddScoped<ISeed, RoleClaimsSeed>();
-            services.AddScoped<IEmailSender, EmailSender>();
-
-
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.LoginPath = new PathString("/identity/Account/Login");
-                options.AccessDeniedPath = new PathString("/identity/Account/AccessDenied");
-            });
+            services.AddPermissionMiddleware();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

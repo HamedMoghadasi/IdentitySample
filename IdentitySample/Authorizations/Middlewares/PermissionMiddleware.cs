@@ -1,19 +1,15 @@
 ﻿using IdentitySample.Data;
-using IdentitySample.Models;
-using IdentitySample.Security;
-using Microsoft.AspNetCore.Authentication;
+using Authorization.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace IdentitySample.Middlewares
+namespace Authorization.Middlewares
 {
     // You may need to install the Microsoft.AspNetCore.Http.Abstractions package into your project
     public class PermissionMiddleware

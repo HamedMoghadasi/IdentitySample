@@ -1,16 +1,15 @@
 ﻿using IdentitySample.Data;
-using IdentitySample.Filters;
-using IdentitySample.Models;
-using IdentitySample.Security;
+using Authorization.Filters;
+using Authorization.Models;
+using Authorization.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
-namespace IdentitySample.Seeds
+namespace Authorization.Seeds
 {
     public class ClaimsSeed : ISeed
     {

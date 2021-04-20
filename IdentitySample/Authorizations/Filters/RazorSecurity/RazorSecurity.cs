@@ -1,16 +1,13 @@
 ﻿using IdentitySample.Data;
-using IdentitySample.Security;
+using Authorization.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
-namespace IdentitySample.Filters.RazorSecurity
+namespace Authorization.Filters.RazorSecurity
 {
-    public class RazorSecurity : IRazorSecurity
+    public class RazorSecurity : ISecurity
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;

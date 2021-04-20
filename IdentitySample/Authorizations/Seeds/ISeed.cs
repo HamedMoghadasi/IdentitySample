@@ -1,6 +1,4 @@
-﻿using IdentitySample.Data;
-
-namespace IdentitySample.Seeds
+﻿namespace Authorization.Seeds
 {
     public interface ISeed
     {

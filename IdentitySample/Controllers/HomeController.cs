@@ -1,35 +1,33 @@
-﻿using IdentitySample.Filters;
-using IdentitySample.Models;
-using IdentitySample.Security;
+﻿using Authorization.Filters;
+using Authorization.Models;
+using Authorization.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace IdentitySample.Controllers
 {
-    //[Permission(GlobalClaimsType.Permission, GlobalClaimsValue.AccessHome)]
-
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly RoleManager<IdentityRole> roleManager;
 
-        public HomeController(ILogger<HomeController> logger)
+
+        public HomeController(ILogger<HomeController> logger, RoleManager<IdentityRole> _roleManager)
         {
             _logger = logger;
         }
 
-        [PermissionDisplayName("Access Inedx")]
+        //[PermissionDisplayName("Access Inedx")]
         public IActionResult Index()
         {
             return View();
         }
 
-        [Authorize]
+        
         [RazorPermission(GlobalClaimsType.Permission, RazorClaimsValue.AccessParagraph)]
         public IActionResult Privacy()
         {

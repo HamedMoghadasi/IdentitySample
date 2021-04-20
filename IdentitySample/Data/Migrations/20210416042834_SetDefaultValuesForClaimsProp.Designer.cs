@@ -21,7 +21,7 @@ namespace IdentitySample.Data.Migrations
                 .HasAnnotation("ProductVersion", "5.0.4")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("IdentitySample.Models.Claims", b =>
+            modelBuilder.Entity("Authorization.Models.Claims", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

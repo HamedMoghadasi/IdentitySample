@@ -1,6 +1,6 @@
 ﻿@using IdentitySample
-@using IdentitySample.Models
-@using IdentitySample.Filters.RazorSecurity
-@using IdentitySample.Security
-@inject IRazorSecurity Permission
+@using Authorization.Models
+@using Authorization.Filters.RazorSecurity
+@using Authorization.Constants
+@inject ISecurity Permission
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers

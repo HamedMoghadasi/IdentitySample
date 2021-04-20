@@ -1,14 +1,10 @@
 ﻿using IdentitySample.Data;
-using IdentitySample.Seeds;
-using Microsoft.AspNetCore.Hosting;
+using Authorization.Seeds;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
-namespace IdentitySample.Utils
+namespace Authorization.Utils
 {
     public static class SeedExtension 
     {
