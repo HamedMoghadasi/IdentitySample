@@ -1,5 +1,8 @@
 using IdentitySample.Data;
+using IdentitySample.Filters;
 using IdentitySample.Filters.RazorSecurity;
+using IdentitySample.Middlewares;
+using IdentitySample.Security;
 using IdentitySample.Seeds;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,19 +37,27 @@ namespace IdentitySample
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
+            
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddHttpContextAccessor();
 
-            services.AddIdentity<IdentityUser,IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddIdentity<IdentityUser,IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
            
             services.AddControllersWithViews().AddNewtonsoftJson();
+
+
             services.AddRazorPages();
+
+
             services.AddScoped<IRazorSecurity, RazorSecurity>();
             services.AddScoped<ISeed, ClaimsSeed>();
             services.AddScoped<ISeed, RolesSeed>();
             services.AddScoped<ISeed, UsersSeed>();
             services.AddScoped<ISeed, RoleClaimsSeed>();
+            services.AddScoped<IEmailSender, EmailSender>();
+
+
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = new PathString("/identity/Account/Login");
@@ -56,6 +68,7 @@ namespace IdentitySample
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -74,6 +87,9 @@ namespace IdentitySample
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UsePermissionMiddleware();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

@@ -19,7 +19,7 @@ namespace IdentitySample.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Claims>()
-            .HasIndex(p => new { p.ClaimType, p.ClaimValue,p.ControllerName,p.ActionName}).IsUnique();
+            .HasIndex(p => new { p.ClaimType, p.ClaimValue,p.ControllerName,p.ActionName,p.DisplayName}).IsUnique();
 
             modelBuilder.Entity<Claims>()
            .Property(p => p.ActionName)

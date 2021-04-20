@@ -25,7 +25,7 @@ namespace IdentitySample.Seeds
 
             claims.ForEach(item =>
             {
-                if (!adminClaims.Any(i => item.Type == item.Type && item.Value == item.Value)) { 
+                if (!adminClaims.Any(i => item.Type == i.Type && item.Value == i.Value)) { 
                     var result = _roleManager.AddClaimAsync(adminRole, item).Result;
                 }
             });

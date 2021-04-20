@@ -12,7 +12,8 @@ using System.Threading.Tasks;
 
 namespace IdentitySample.Controllers
 {
-    [Permission(GlobalClaimsType.Permission, GlobalClaimsValue.AccessHome)]
+    //[Permission(GlobalClaimsType.Permission, GlobalClaimsValue.AccessHome)]
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -22,12 +23,13 @@ namespace IdentitySample.Controllers
             _logger = logger;
         }
 
+        [PermissionDisplayName("Access Inedx")]
         public IActionResult Index()
         {
             return View();
         }
 
-        [Permission(GlobalClaimsType.Permission, GlobalClaimsValue.AccessPrivacy)]
+        [Authorize]
         [RazorPermission(GlobalClaimsType.Permission, RazorClaimsValue.AccessParagraph)]
         public IActionResult Privacy()
         {

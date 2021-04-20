@@ -1,6 +1,8 @@
 ﻿using IdentitySample.Data;
 using IdentitySample.Filters;
 using IdentitySample.Models;
+using IdentitySample.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -26,17 +28,17 @@ namespace IdentitySample.Seeds
                 .Where(i => typeof(ControllerBase).IsAssignableFrom(i))
                 .Select(i => i);
 
-            FindControllersClaims(claims, controllers);
-            FindActionsClaims(claims, controllers);
+            FindClaims(claims, controllers);
             FindRazorsClaims(claims, controllers);
+            var distinctClaims = claims.Distinct(new ClaimsComparer()).ToList();
 
-            InsertClaims(claims);
+            InsertClaims(distinctClaims);
         }
 
         private void InsertClaims(List<Claims> claimFilters)
         {
             var dbClaims = _context.Claims.ToList();
-            var removedClaimsFilters = dbClaims.Except(claimFilters,new ClaimsComparer()).ToList();
+            var removedClaimsFilters = dbClaims.Except(claimFilters, new ClaimsComparer()).ToList();
             foreach (var item in claimFilters)
             {
                 if (!IsExisted(dbClaims, item))
@@ -49,7 +51,7 @@ namespace IdentitySample.Seeds
                 if (IsExisted(dbClaims, item))
                 {
                     _context.Claims.Remove(item);
-                    
+
                 }
             }
             _context.SaveChanges();
@@ -60,42 +62,32 @@ namespace IdentitySample.Seeds
             return dbClaims.Any(p => p.ControllerName == item.ControllerName && p.ActionName == item.ActionName && p.ClaimType == item.ClaimType && p.ClaimValue == item.ClaimValue);
         }
 
-        private void FindActionsClaims(List<Claims> claims, IEnumerable<Type> controllers)
+        private void FindClaims(List<Claims> claims, IEnumerable<Type> controllers)
         {
-            foreach (Type controller in controllers)
+            foreach (TypeInfo controller in controllers)
             {
-                var actions = controller.GetMethods().Where(i => i.DeclaringType.IsSubclassOf(typeof(ControllerBase)) && i.CustomAttributes.Count() > 0).ToList();
-                foreach (var action in actions)
-                {
-                    var permissionAttributes = action.GetCustomAttributes<Permission>(false);
-                    foreach (var attr in permissionAttributes)
-                    {
-                        claims.Add(new Claims
-                        {
-                            ActionName = action.Name,
-                            ControllerName = action.DeclaringType.Name,
-                            ClaimValue = attr.claimValue,
-                            ClaimType = attr.claimType,
-                        });
-                    }
-                }
+                //FindContollerClaims(claims, controller);
+                FindActionsClaims(claims, controller);
             }
         }
 
-        private void FindControllersClaims(List<Claims> claims, IEnumerable<Type> controllers)
+        private static void FindActionsClaims(List<Claims> claims, TypeInfo controller)
         {
-            foreach (Type controller in controllers)
+            var actions = controller.DeclaredMethods;
+            foreach (var action in actions)
             {
-                var permissionAttributes = controller.GetCustomAttributes<Permission>(false);
-
-                foreach (var attr in permissionAttributes)
+                if (IsProtectedAction(controller, action))
                 {
+                    var permissionDisplayNameAttribute = action.GetCustomAttributes<PermissionDisplayName>(false).FirstOrDefault();
                     claims.Add(new Claims
                     {
-                        ActionName = string.Empty,
+                        ActionName = action.Name,
                         ControllerName = controller.Name,
-                        ClaimValue = attr.claimValue,
-                        ClaimType = attr.claimType,
+                        ClaimValue = $"{controller.Name}.{action.Name}",
+                        ClaimType = GlobalClaimsType.Permission,
+                        DisplayName = permissionDisplayNameAttribute != null
+                        ? permissionDisplayNameAttribute.DisplayName
+                        : $"Access {action.Name} in {controller.Name} "
                     });
                 }
             }
@@ -108,6 +100,7 @@ namespace IdentitySample.Seeds
                 var actions = controller.GetMethods().Where(i => i.DeclaringType.IsSubclassOf(typeof(ControllerBase)) && i.CustomAttributes.Count() > 0).ToList();
                 foreach (var action in actions)
                 {
+
                     var permissionAttributes = action.GetCustomAttributes<RazorPermission>(false);
                     foreach (var attr in permissionAttributes)
                     {
@@ -117,10 +110,25 @@ namespace IdentitySample.Seeds
                             ControllerName = action.DeclaringType.Name,
                             ClaimValue = attr.claimValue,
                             ClaimType = attr.claimType,
+                            DisplayName = $"{action.DeclaringType.Name}.{action.Name}.{attr.claimValue}"
                         });
                     }
                 }
             }
+        }
+
+        private static bool IsProtectedAction(MemberInfo controllerTypeInfo, MemberInfo actionMethodInfo)
+        {
+            if (actionMethodInfo.GetCustomAttribute<AllowAnonymousAttribute>(true) != null)
+                return false;
+
+            if (controllerTypeInfo.GetCustomAttribute<AuthorizeAttribute>(true) != null)
+                return true;
+
+            if (actionMethodInfo.GetCustomAttribute<AuthorizeAttribute>(true) != null)
+                return true;
+
+            return false;
         }
     }
 }

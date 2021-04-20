@@ -13,7 +13,8 @@ namespace IdentitySample.Models
         public string ControllerName { get; set; } 
         public string ActionName { get; set; } 
         public string ClaimType { get; set; }
-        public string ClaimValue { get; set; } 
+        public string ClaimValue { get; set; }
+        public string  DisplayName { get; set; }
     }
 
     public class ClaimsComparer : IEqualityComparer<Claims>

@@ -12,7 +12,7 @@ namespace IdentitySample.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Permission(GlobalClaimsType.Permission, GlobalClaimsValue.AccessValue)]
+    //[Permission(GlobalClaimsType.Permission, GlobalClaimsValue.AccessValue)]
     public class ValuesController : ControllerBase
     {
         // GET: api/<ValuesController>
