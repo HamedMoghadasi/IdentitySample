@@ -37,18 +37,11 @@ namespace IdentitySample
                     Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
             
             services.AddDatabaseDeveloperPageExceptionFilter();
-            
 
-            services.AddIdentity<ApplicationUser,ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddUserStore<ApplicationUserStore>()
-                .AddUserManager<ApplicationUserManager>()
-                .AddRoleStore<ApplicationRoleStore>()
-                .AddRoleManager<ApplicationRoleManager>()
-                .AddDefaultTokenProviders();
-           
+
             services.AddControllersWithViews();
 
-            services.AddPermissionMiddleware();
+            services.AddPermissionMiddleware<ApplicationDbContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

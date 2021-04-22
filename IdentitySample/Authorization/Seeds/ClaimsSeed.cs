@@ -8,13 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Authorization.Data;
 
 namespace Authorization.Seeds
 {
     public class ClaimsSeed : ISeed
     {
-        private readonly ApplicationDbContext _context;
-        public ClaimsSeed(ApplicationDbContext context)
+        private readonly AuthorizationDbContext _context;
+        public ClaimsSeed(AuthorizationDbContext context)
         {
             _context = context;
         }
