@@ -13,6 +13,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using IdentitySample.Authorizations.Extensions;
+using Authorization.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System;
+using Authorization.Stores;
 
 namespace IdentitySample
 {
@@ -35,8 +39,11 @@ namespace IdentitySample
             services.AddDatabaseDeveloperPageExceptionFilter();
             
 
-            services.AddIdentity<IdentityUser,IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+            services.AddIdentity<ApplicationUser,ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddUserStore<ApplicationUserStore>()
+                .AddUserManager<ApplicationUserManager>()
+                .AddRoleStore<ApplicationRoleStore>()
+                .AddRoleManager<ApplicationRoleManager>()
                 .AddDefaultTokenProviders();
            
             services.AddControllersWithViews();

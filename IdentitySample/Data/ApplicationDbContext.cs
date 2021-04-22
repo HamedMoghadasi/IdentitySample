@@ -1,10 +1,14 @@
-﻿using Authorization.Models;
+﻿using Authorization.Core;
+using Authorization.Extensions;
+using Authorization.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace IdentitySample.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser,ApplicationRole,Guid, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationRoleClaim, ApplicationUserToken>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -12,11 +16,12 @@ namespace IdentitySample.Data
         }
 
         public DbSet<Claims> Claims { get; set; }
+        public DbSet<Domain> Domains { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            modelBuilder.ApplyConfiguration(new ClaimsConfiguration());
-            base.OnModelCreating(modelBuilder);
+            builder.ApplyPermissionModelsConfiguration();
+            base.OnModelCreating(builder);
         }
     }
 }
