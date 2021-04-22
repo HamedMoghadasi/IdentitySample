@@ -34,11 +34,9 @@ namespace IdentitySample
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
+                    Configuration.GetConnectionString("DefaultConnection")));
             
             services.AddDatabaseDeveloperPageExceptionFilter();
-
-
             services.AddControllersWithViews();
 
             services.AddPermissionMiddleware<ApplicationDbContext>();
