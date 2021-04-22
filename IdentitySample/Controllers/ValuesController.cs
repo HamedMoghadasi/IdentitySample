@@ -2,6 +2,10 @@
 using Authorization.Constants;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
+using Authorization.Filters.Security;
+using IdentitySample.Authorizations.Constants;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -9,15 +13,27 @@ namespace IdentitySample.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Permission(GlobalClaimsType.Permission, GlobalClaimsValue.AccessValue)]
     public class ValuesController : ControllerBase
     {
+        private readonly ISecurity _security;
+        public ValuesController(ISecurity security)
+        {
+            _security = security;
+        }
         // GET: api/<ValuesController>
         [HttpGet]
-        [Permission(GlobalClaimsType.Permission, GlobalClaimsValue.CanGetAllValue)]
-        public IEnumerable<string> Get()
+        public async Task<IEnumerable<string>> Get()
         {
-            return new string[] { "value1", "value2" };
+            var result = new List<string> { "value1", "value2" };
+            if (await _security.IsGrantedAsync(RolesValue.Admin))
+            {
+                result = new List<string> { "admin" };
+            }
+            if (await _security.IsGrantedAsync(GlobalClaimsType.Permission, "ValuesController.foo")) {
+                result = new List<string> { "value1", "value2", "value3", "value4", "value5", "value6" };
+            }
+
+            return result;
         }
 
         // GET api/<ValuesController>/5

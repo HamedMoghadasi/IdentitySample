@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Authorization.Constants;
 
 namespace Authorization.Middlewares
 {
@@ -23,77 +24,42 @@ namespace Authorization.Middlewares
 
         public async Task InvokeAsync(HttpContext httpContext, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext _context)
         {
+            if (httpContext.GetEndpoint() != null) {
+                var hasClaims = new List<bool>();
+                var targetPersistedClaims = new List<Claims>();
+                var controllerActionDescriptor = httpContext.GetEndpoint().Metadata.GetMetadata<ControllerActionDescriptor>();
 
-            var hasClaims = new List<bool>();
-            var targetPersistedClaims = new List<Claims>();
-            var controllerActionDescriptor = httpContext.GetEndpoint().Metadata.GetMetadata<ControllerActionDescriptor>();
-
-            if (controllerActionDescriptor != null)
-            {
-                var controllerName = $"{controllerActionDescriptor.ControllerName}Controller";
-                var actionName = controllerActionDescriptor.ActionName;
-                var actionsClaims = _context.Claims.Where( i=> i.ControllerName == controllerName && i.ActionName == actionName)
-                    .AsNoTracking()
-                    .AsEnumerable();
-                if (actionsClaims.Count() > 0 && httpContext.User.Identity.IsAuthenticated) {
-                    var userName = httpContext.User.Identity.Name;
-                    var user = await userManager.FindByNameAsync(userName);
-                    var roles = await userManager.GetRolesAsync(user);
-
-                    foreach (var role in roles)
+                if (controllerActionDescriptor != null)
+                {
+                    var controllerName = $"{controllerActionDescriptor.ControllerName}Controller";
+                    var actionName = controllerActionDescriptor.ActionName;
+                    var actionsClaims = _context.Claims.Where(i => i.ControllerName == controllerName && i.ActionName == actionName && i.ClaimType == GlobalClaimsType.Permission)
+                        .AsNoTracking()
+                        .AsEnumerable();
+                    if (actionsClaims.Count() > 0 && httpContext.User.Identity.IsAuthenticated)
                     {
-                        var identityRole = await roleManager.FindByNameAsync(role);
-                        var roleClaims = await roleManager.GetClaimsAsync(identityRole);
-                        var actionsClaimsCount = actionsClaims.Count();
-                        var validClaims = roleClaims.Where(r => actionsClaims.Any(ac => ac.ClaimType == r.Type && ac.ClaimValue == r.Value));
-                        hasClaims.Add(validClaims.Count() == actionsClaimsCount);
-                    }
+                        var userName = httpContext.User.Identity.Name;
+                        var user = await userManager.FindByNameAsync(userName);
+                        var roles = await userManager.GetRolesAsync(user);
 
-                    if (!hasClaims.Any(i => i == true))
-                    {
-                        httpContext.Response.Redirect("/Identity/Account/AccessDenied");
+                        foreach (var role in roles)
+                        {
+                            var identityRole = await roleManager.FindByNameAsync(role);
+                            var roleClaims = await roleManager.GetClaimsAsync(identityRole);
+                            roleClaims = roleClaims.Where(i => i.Type == GlobalClaimsType.Permission).ToList();
+                            var actionsClaimsCount = actionsClaims.Count();
+                            var validClaims = roleClaims.Where(r => actionsClaims.Any(ac => ac.ClaimType == r.Type && ac.ClaimValue == r.Value));
+                            hasClaims.Add(validClaims.Count() == actionsClaimsCount);
+                        }
+
+                        if (!hasClaims.Any(i => i == true))
+                        {
+                            httpContext.Response.Redirect("/Identity/Account/AccessDenied");
+                        }
                     }
                 }
-
-                
-
-
-
             }
-            //var isAuthenticated = httpContext.User.Identity.IsAuthenticated;
-            //// Redirect to login if user is not authenticated. This instruction is neccessary for JS async calls, otherwise everycall will return unauthorized without explaining why
-            //if (!isAuthenticated && httpContext.Request.Path.Value != "/Identity/Account/Login")
-            //{
-            //    httpContext.Response.Clear();
-            //    httpContext.Response.Redirect("/Identity/Account/Login");
-            //}
-            //else if(isAuthenticated)
-            //{
-            //    var controllerActionDescriptor = httpContext.GetEndpoint().Metadata.GetMetadata<ControllerActionDescriptor>();
-
-            //    if (controllerActionDescriptor != null) {
-            //        var controllerName = $"{controllerActionDescriptor.ControllerName}Controller";
-            //        var actionName = controllerActionDescriptor.ActionName;
-
-            //        var userName = httpContext.User.Identity.Name;
-            //        var user = userManager.FindByNameAsync(userName).Result;
-            //        var roles = userManager.GetRolesAsync(user).Result;
-
-            //        foreach (var role in roles)
-            //        {
-            //            var identityRole = roleManager.FindByNameAsync(role).Result;
-            //            var claims = roleManager.GetClaimsAsync(identityRole).Result;
-            //            hasClaims.Add(claims.Any(c => c.Type == GlobalClaimsType.Permission && c.Value == $"{controllerName}.{actionName}"));
-            //        }
-
-            //        if (!hasClaims.Any(i => i == true))
-            //        {
-            //            httpContext.Response.Redirect("/Identity/Account/AccessDenied");
-            //        }
-            //    }
-
-
-            //}
+           
             await _next(httpContext);
 
         }
@@ -106,5 +72,9 @@ namespace Authorization.Middlewares
         {
             return builder.UseMiddleware<PermissionMiddleware>();
         }
+    }
+    public class Response {
+        public string Message { get; set; }
+        public int StatusCode { get; set; }
     }
 }

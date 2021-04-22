@@ -3,7 +3,7 @@
 }
 <h1>@ViewData["Title"]</h1>
 
-@if (Permission.IsGranted(RazorClaimsValue.AccessParagraph))
+@if (await Permission.IsGrantedAsync(GlobalClaimsType.ViewPermission,RazorClaimsValue.AccessParagraph))
 {
     <p>This paragraph is displayed because you fulfilled PolicyName.</p>
 }

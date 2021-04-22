@@ -12,23 +12,13 @@ namespace IdentitySample.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly RoleManager<IdentityRole> roleManager;
-
-
-        public HomeController(ILogger<HomeController> logger, RoleManager<IdentityRole> _roleManager)
-        {
-            _logger = logger;
-        }
-
-        //[PermissionDisplayName("Access Inedx")]
         public IActionResult Index()
         {
             return View();
         }
 
-        
-        [RazorPermission(GlobalClaimsType.Permission, RazorClaimsValue.AccessParagraph)]
+
+        [RazorPermission(RazorClaimsValue.AccessParagraph)]
         public IActionResult Privacy()
         {
             return View();

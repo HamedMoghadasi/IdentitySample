@@ -1,5 +1,5 @@
 using IdentitySample.Data;
-using Authorization.Filters.RazorSecurity;
+using Authorization.Filters.Security;
 using Authorization.Middlewares;
 using Authorization.Utils;
 using Authorization.Seeds;

@@ -4,40 +4,43 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
-namespace Authorization.Filters.RazorSecurity
+namespace Authorization.Filters.Security
 {
-    public class RazorSecurity : ISecurity
+    public class Security : ISecurity
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ApplicationDbContext _context;
 
-        public RazorSecurity(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IHttpContextAccessor httpContextAccessor, ApplicationDbContext context)
+        public Security(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IHttpContextAccessor httpContextAccessor, ApplicationDbContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _httpContextAccessor = httpContextAccessor;
             _context = context;
         }
-        public bool IsGranted(string claimType, string claimValue)
+        public async Task<bool> IsGrantedAsync(string claimType, string claimValue)
         {
             var isClaimExistedInDb = _context.Claims.Any(i => i.ClaimType == claimType && i.ClaimValue == claimValue);
-            if (!isClaimExistedInDb) {
-                return true;
+            if (!isClaimExistedInDb)
+            {
+                return false;
             }
             var result = false;
             var hasClaims = new List<bool>();
-            if (_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated) {
+            if (_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+            {
                 var userName = _httpContextAccessor.HttpContext.User.Identity.Name;
-                var user = _userManager.FindByNameAsync(userName).Result;
-                var roles = _userManager.GetRolesAsync(user).Result;
+                var user = await _userManager.FindByNameAsync(userName);
+                var roles = await _userManager.GetRolesAsync(user);
 
                 foreach (var role in roles)
                 {
-                    var identityRole = _roleManager.FindByNameAsync(role).Result;
-                    var claims = _roleManager.GetClaimsAsync(identityRole).Result;
+                    var identityRole = await _roleManager.FindByNameAsync(role);
+                    var claims = await _roleManager.GetClaimsAsync(identityRole);
                     hasClaims.Add(claims.Any(c => c.Type == claimType && c.Value == claimValue));
                 }
 
@@ -50,15 +53,20 @@ namespace Authorization.Filters.RazorSecurity
                     result = false;
                 }
             }
-            
 
-                return result;
-            
+            return result;
         }
 
-        public bool IsGranted(string claimValue)
+        public async Task<bool> IsGrantedAsync(string roleName)
         {
-            return IsGranted(GlobalClaimsType.Permission, claimValue);
+            var result = false;
+            if (_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+            {
+                var username = _httpContextAccessor.HttpContext.User.Identity.Name;
+                var user = await _userManager.FindByNameAsync(username);
+                result = await _userManager.IsInRoleAsync(user, roleName);
+            }
+            return result;
         }
     }
 }

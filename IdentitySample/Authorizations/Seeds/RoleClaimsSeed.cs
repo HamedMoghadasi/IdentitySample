@@ -1,8 +1,10 @@
-﻿using IdentitySample.Data;
+﻿using IdentitySample.Authorizations.Extensions;
+using IdentitySample.Data;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Linq;
 using System.Security.Claims;
+using Authorization.Models;
 
 namespace Authorization.Seeds
 {
@@ -15,6 +17,7 @@ namespace Authorization.Seeds
             _roleManager = roleManager;
             _context = context;
         }
+
         public void Seed()
         {
             var claims = _context.Claims.Select(item => new Claim(item.ClaimType, item.ClaimValue)).ToList();

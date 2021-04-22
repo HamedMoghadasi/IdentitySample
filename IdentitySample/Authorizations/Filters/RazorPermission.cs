@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Authorization.Constants;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Authorization.Filters
@@ -6,9 +7,14 @@ namespace Authorization.Filters
     public class RazorPermission : TypeFilterAttribute
         {
             private string _claimValue;
-            private string _claimType;
+            private string _claimType = GlobalClaimsType.ViewPermission;
 
-            public RazorPermission(string claimType, string claimValue) : base(typeof(RazorPermissionFilter))
+        public RazorPermission(string claimValue) : base(typeof(RazorPermissionFilter))
+        {
+            _claimValue = claimValue;
+        } 
+
+        public RazorPermission(string claimType, string claimValue) : base(typeof(RazorPermissionFilter))
             {
                 _claimValue = claimValue;
                 _claimType = claimType;
