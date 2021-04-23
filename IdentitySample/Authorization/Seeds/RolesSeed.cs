@@ -1,4 +1,6 @@
-﻿using Authorization.Models;
+﻿using Authorization.Data;
+using Authorization.Models;
+using Authorization.Rpositories;
 using Microsoft.AspNetCore.Identity;
 using System;
 
@@ -7,14 +9,16 @@ namespace Authorization.Seeds
     public class RolesSeed : ISeed
     {
         private readonly RoleManager<ApplicationRole> _roleManager;
-        public RolesSeed(RoleManager<ApplicationRole> roleManager)
+        private readonly IDomainRepository _domainRepository;
+        public RolesSeed(RoleManager<ApplicationRole> roleManager, IDomainRepository domainRepository)
         {
             _roleManager = roleManager;
+            _domainRepository = domainRepository;
         }
-
+        public double ExecutionOrder => 2;
         public void Seed()
         {
-            AddNewRole("admin");
+            AddNewRole(SeedOptions.DefaultAdmin);
             Console.WriteLine("Role Seed");
         }
 
@@ -23,8 +27,11 @@ namespace Authorization.Seeds
             var isExist = _roleManager.RoleExistsAsync(role).Result;
             if (!isExist)
             {
-                var result = _roleManager.CreateAsync(new ApplicationRole { Name = role});
-                
+                var domains = _domainRepository.GetAll();
+                foreach (var item in domains)
+                {
+                    var result = _roleManager.CreateAsync(new ApplicationRole { Name = role , DomainId= item.Id});
+                }
             }
         }
     }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using IdentitySample.Authorizations.Extensions;
+using Authorizations.Extensions;
 using Authorization.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System;
@@ -34,7 +34,7 @@ namespace IdentitySample
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
             
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddControllersWithViews();

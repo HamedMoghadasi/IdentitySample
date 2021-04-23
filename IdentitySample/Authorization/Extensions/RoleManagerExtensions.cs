@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IdentitySample.Authorizations.Extensions
+namespace Authorizations.Extensions
 {
     public static class RoleManagerExtensions
     {

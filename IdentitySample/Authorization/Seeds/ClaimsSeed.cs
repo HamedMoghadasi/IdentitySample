@@ -1,5 +1,4 @@
-﻿using IdentitySample.Data;
-using Authorization.Filters;
+﻿using Authorization.Filters;
 using Authorization.Models;
 using Authorization.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -9,16 +8,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Authorization.Data;
+using Authorization.Rpositories;
 
 namespace Authorization.Seeds
 {
     public class ClaimsSeed : ISeed
     {
-        private readonly AuthorizationDbContext _context;
-        public ClaimsSeed(AuthorizationDbContext context)
+        private readonly IClaimsRepository _claimsRepository;
+        public ClaimsSeed(IClaimsRepository claimsRepository)
         {
-            _context = context;
+            _claimsRepository = claimsRepository;
         }
+        public double ExecutionOrder => 4;
         public void Seed()
         {
             var claims = new List<Claims>();
@@ -37,27 +38,27 @@ namespace Authorization.Seeds
 
         private void InsertClaims(List<Claims> claimFilters)
         {
-            var dbClaims = _context.Auth_Claims.ToList();
+            var dbClaims = _claimsRepository.GetAll();
             var removedClaimsFilters = dbClaims.Except(claimFilters, new ClaimsComparer()).ToList();
             foreach (var item in claimFilters)
             {
                 if (!IsExisted(dbClaims, item))
                 {
-                    _context.Auth_Claims.Add(item);
+                    _claimsRepository.Add(item);
                 }
             }
             foreach (var item in removedClaimsFilters)
             {
                 if (IsExisted(dbClaims, item))
                 {
-                    _context.Auth_Claims.Remove(item);
+                    _claimsRepository.Remove(item);
 
                 }
             }
-            _context.SaveChanges();
+            _claimsRepository.SaveChanges();
         }
 
-        private bool IsExisted(IList<Claims> dbClaims, Claims item)
+        private bool IsExisted(IEnumerable<Claims> dbClaims, Claims item)
         {
             return dbClaims.Any(p => p.ControllerName == item.ControllerName && p.ActionName == item.ActionName && p.ClaimType == item.ClaimType && p.ClaimValue == item.ClaimValue);
         }

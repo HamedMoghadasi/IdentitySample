@@ -1,10 +1,9 @@
-﻿using IdentitySample.Data;
-using Authorization.Seeds;
+﻿using Authorization.Seeds;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
 
-namespace Authorization.Utils
+namespace Authorization.Extensions
 {
     public static class SeedExtension 
     {
@@ -13,8 +12,8 @@ namespace Authorization.Utils
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-                var context = services.GetService<ApplicationDbContext>();
-                services.GetServices<ISeed>().ToList().ForEach(seeder => {
+                var Seeds = services.GetServices<ISeed>().OrderBy(i => i.ExecutionOrder).ToList();
+                Seeds.ForEach(seeder => {
                     seeder.Seed();
                 });
             }

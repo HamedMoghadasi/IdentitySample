@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Authorizations.Core
+namespace Authorization.Rpositories
 {
-    public interface IModelBase
+    public interface IRoleRepository
     {
     }
 }

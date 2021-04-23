@@ -29,6 +29,9 @@ namespace IdentitySample.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("DomainId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Name")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -38,6 +41,8 @@ namespace IdentitySample.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DomainId");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
@@ -322,6 +327,17 @@ namespace IdentitySample.Migrations
                     b.ToTable("Auth_RoleClaims");
                 });
 
+            modelBuilder.Entity("Authorization.Models.ApplicationRole", b =>
+                {
+                    b.HasOne("Authorization.Models.Domain", "Domain")
+                        .WithMany("Roles")
+                        .HasForeignKey("DomainId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Domain");
+                });
+
             modelBuilder.Entity("Authorization.Models.ApplicationRoleClaim", b =>
                 {
                     b.HasOne("Authorization.Models.ApplicationRole", null)
@@ -400,6 +416,11 @@ namespace IdentitySample.Migrations
             modelBuilder.Entity("Authorization.Models.Claims", b =>
                 {
                     b.Navigation("RoleClaims");
+                });
+
+            modelBuilder.Entity("Authorization.Models.Domain", b =>
+                {
+                    b.Navigation("Roles");
                 });
 #pragma warning restore 612, 618
         }

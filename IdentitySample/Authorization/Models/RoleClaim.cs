@@ -33,7 +33,6 @@ namespace Authorization.Models
           .HasOne(i => i.Roles)
           .WithMany(i => i.RoleClaims)
           .HasForeignKey(i => i.RoleId);
-
         }
     }
 }

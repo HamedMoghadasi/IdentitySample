@@ -1,4 +1,4 @@
-using Authorization.Utils;
+using Authorization.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 

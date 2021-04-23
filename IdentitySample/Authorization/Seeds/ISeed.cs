@@ -2,6 +2,7 @@
 {
     public interface ISeed
     {
+        double ExecutionOrder { get; }
         void Seed();
     }
 }

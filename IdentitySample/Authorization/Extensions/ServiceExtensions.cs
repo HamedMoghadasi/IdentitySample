@@ -1,10 +1,10 @@
 ﻿using Authorization.Data;
 using Authorization.Filters.Security;
 using Authorization.Models;
+using Authorization.Rpositories;
 using Authorization.Seeds;
 using Authorization.Stores;
 using Authorization.Utils;
-using IdentitySample.Authorizations.Core;
 using IdentitySample.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IdentitySample.Authorizations.Extensions
+namespace Authorizations.Extensions
 {
     public static class ServiceExtensions
     {
@@ -36,10 +36,21 @@ namespace IdentitySample.Authorizations.Extensions
             services.AddHttpContextAccessor();
 
             services.AddScoped<ISecurity, Security>();
+
             services.AddScoped<ISeed, ClaimsSeed>();
+            services.AddScoped<ISeed, DomainSeed>();
             services.AddScoped<ISeed, RolesSeed>();
             services.AddScoped<ISeed, UsersSeed>();
             services.AddScoped<ISeed, RoleClaimsSeed>();
+            
+            services.AddScoped<IClaimsRepository, ClaimsRepository>();
+            services.AddScoped<IDomainRepository, DomainRepository>();
+            services.AddScoped<IRoleClaimRepository, RoleClaimRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+
+            
+
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddTransient(typeof(AuthorizationDbContext), typeof(TContext));
 

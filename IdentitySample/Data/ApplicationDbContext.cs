@@ -1,5 +1,4 @@
-﻿using Authorization.Core;
-using Authorization.Data;
+﻿using Authorization.Data;
 using Authorization.Extensions;
 using Authorization.Models;
 using Microsoft.AspNetCore.Identity;

@@ -11,5 +11,7 @@ namespace Authorization.Models
     public class Domain : ModelBase
     {
         public string Name { get; set; }
+
+        public virtual ICollection<ApplicationRole> Roles { get; set; }
     }
 }

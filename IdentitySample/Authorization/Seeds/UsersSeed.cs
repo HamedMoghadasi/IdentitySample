@@ -12,16 +12,10 @@ namespace Authorization.Seeds
         {
             _userManager = userManager;
         }
-
+        public double ExecutionOrder => 3;
         public void Seed()
         {
-            AddNewUser(new ApplicationUser
-            {
-                Email = "admin@gmail.com",
-                EmailConfirmed = true,
-                UserName = "admin@gmail.com",
-            }, "orchidHM8632!", "admin");
-
+            AddNewUser(SeedOptions.DefaultUser, SeedOptions.DefaultPassword, SeedOptions.DefaultAdmin);
             Console.WriteLine("user seed");
         }
 
