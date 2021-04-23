@@ -16,7 +16,6 @@ using Authorizations.Extensions;
 using Authorization.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System;
-using Authorization.Stores;
 
 namespace IdentitySample
 {

@@ -1,5 +1,6 @@
 ﻿using Authorization.Data;
 using Authorization.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,10 @@ namespace Authorization.Rpositories
 
         public IEnumerable<Claims> GetClaims(ApplicationRole Role)
         {
-            return GetAll().Where(i => i.RoleId == Role.Id).Select(i => i.Claims);
+            return _context.Auth_RoleClaims
+                .Where(i => i.RoleId == Role.Id)
+                .Include(i => i.Claims)
+                .Select(i => i.Claims);
         }
     }
 }
