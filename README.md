@@ -1,2 +1,2 @@
 # Identity Sample
-identity policy-base authorization module
+dynamic claims-base authorization module
