@@ -20,7 +20,7 @@ namespace Authorization.Seeds
 
         public void Seed()
         {
-            var claims = _context.Claims.Select(item => new Claim(item.ClaimType, item.ClaimValue)).ToList();
+            var claims = _context.Auth_Claims.Select(item => new Claim(item.ClaimType, item.ClaimValue)).ToList();
             var adminRole = _roleManager.FindByNameAsync("admin").Result;
             var adminClaims = _roleManager.GetClaimsAsync(adminRole).Result;
 

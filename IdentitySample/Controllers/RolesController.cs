@@ -35,7 +35,7 @@ namespace IdentitySample.Controllers
         {
             var identityRole = await _roleManager.FindByNameAsync(role.RoleName);
             var roleClaims = await _roleManager.GetClaimsAsync(identityRole);
-            var allClaims = _context.Claims.ToList();
+            var allClaims = _context.Auth_Claims.ToList();
             var mappedRoleClaims = roleClaims.Select(item => new Claims
             {
                 ClaimType = item.Type,

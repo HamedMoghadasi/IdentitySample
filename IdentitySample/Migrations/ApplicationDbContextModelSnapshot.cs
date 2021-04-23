@@ -262,7 +262,7 @@ namespace IdentitySample.Migrations
                         .IsUnique()
                         .HasFilter("[ClaimType] IS NOT NULL AND [ClaimValue] IS NOT NULL AND [ControllerName] IS NOT NULL AND [ActionName] IS NOT NULL AND [DisplayName] IS NOT NULL");
 
-                    b.ToTable("Claims");
+                    b.ToTable("Auth_Claims");
                 });
 
             modelBuilder.Entity("Authorization.Models.Domain", b =>
@@ -287,7 +287,39 @@ namespace IdentitySample.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Domains");
+                    b.ToTable("Auth_Domains");
+                });
+
+            modelBuilder.Entity("Authorization.Models.RoleClaim", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("ClaimId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClaimId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("Auth_RoleClaims");
                 });
 
             modelBuilder.Entity("Authorization.Models.ApplicationRoleClaim", b =>
@@ -339,6 +371,35 @@ namespace IdentitySample.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Authorization.Models.RoleClaim", b =>
+                {
+                    b.HasOne("Authorization.Models.Claims", "Claims")
+                        .WithMany("RoleClaims")
+                        .HasForeignKey("ClaimId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Authorization.Models.ApplicationRole", "Roles")
+                        .WithMany("RoleClaims")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Claims");
+
+                    b.Navigation("Roles");
+                });
+
+            modelBuilder.Entity("Authorization.Models.ApplicationRole", b =>
+                {
+                    b.Navigation("RoleClaims");
+                });
+
+            modelBuilder.Entity("Authorization.Models.Claims", b =>
+                {
+                    b.Navigation("RoleClaims");
                 });
 #pragma warning restore 612, 618
         }

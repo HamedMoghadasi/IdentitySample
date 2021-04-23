@@ -37,20 +37,20 @@ namespace Authorization.Seeds
 
         private void InsertClaims(List<Claims> claimFilters)
         {
-            var dbClaims = _context.Claims.ToList();
+            var dbClaims = _context.Auth_Claims.ToList();
             var removedClaimsFilters = dbClaims.Except(claimFilters, new ClaimsComparer()).ToList();
             foreach (var item in claimFilters)
             {
                 if (!IsExisted(dbClaims, item))
                 {
-                    _context.Claims.Add(item);
+                    _context.Auth_Claims.Add(item);
                 }
             }
             foreach (var item in removedClaimsFilters)
             {
                 if (IsExisted(dbClaims, item))
                 {
-                    _context.Claims.Remove(item);
+                    _context.Auth_Claims.Remove(item);
 
                 }
             }

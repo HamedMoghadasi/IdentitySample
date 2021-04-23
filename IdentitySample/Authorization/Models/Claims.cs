@@ -1,5 +1,4 @@
-﻿using Authorization.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
@@ -14,6 +13,8 @@ namespace Authorization.Models
         public string ClaimType { get; set; }
         public string ClaimValue { get; set; }
         public string DisplayName { get; set; }
+
+        public virtual ICollection<RoleClaim> RoleClaims { get; set; }
     }
 
     public class ClaimsComparer : IEqualityComparer<Claims>
@@ -33,6 +34,7 @@ namespace Authorization.Models
     {
         public void Configure(EntityTypeBuilder<Claims> builder)
         {
+
             builder
             .HasIndex(p => new { p.ClaimType, p.ClaimValue, p.ControllerName, p.ActionName, p.DisplayName }).IsUnique();
 

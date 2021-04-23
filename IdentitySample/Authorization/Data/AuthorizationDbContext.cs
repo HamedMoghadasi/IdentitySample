@@ -16,8 +16,10 @@ namespace Authorization.Data
         {
         }
 
-        public DbSet<Claims> Claims { get; set; }
-        public DbSet<Domain> Domains { get; set; }
+        public DbSet<Claims> Auth_Claims { get; set; }
+        public DbSet<Domain> Auth_Domains{ get; set; }
+        public DbSet<RoleClaim> Auth_RoleClaims { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -25,7 +25,7 @@ namespace Authorization.Filters.Security
         }
         public async Task<bool> IsGrantedAsync(string claimType, string claimValue)
         {
-            var isClaimExistedInDb = _context.Claims.Any(i => i.ClaimType == claimType && i.ClaimValue == claimValue);
+            var isClaimExistedInDb = _context.Auth_Claims.Any(i => i.ClaimType == claimType && i.ClaimValue == claimValue);
             if (!isClaimExistedInDb)
             {
                 return false;

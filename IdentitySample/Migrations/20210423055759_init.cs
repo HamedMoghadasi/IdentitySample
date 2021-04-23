@@ -47,7 +47,7 @@ namespace IdentitySample.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Claims",
+                name: "Auth_Claims",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
@@ -61,11 +61,11 @@ namespace IdentitySample.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Claims", x => x.Id);
+                    table.PrimaryKey("PK_Auth_Claims", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Domains",
+                name: "Auth_Domains",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
@@ -75,7 +75,7 @@ namespace IdentitySample.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Domains", x => x.Id);
+                    table.PrimaryKey("PK_Auth_Domains", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -184,6 +184,33 @@ namespace IdentitySample.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Auth_RoleClaims",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClaimId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Auth_RoleClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Auth_RoleClaims_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Auth_RoleClaims_Auth_Claims_ClaimId",
+                        column: x => x.ClaimId,
+                        principalTable: "Auth_Claims",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -224,11 +251,21 @@ namespace IdentitySample.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Claims_ClaimType_ClaimValue_ControllerName_ActionName_DisplayName",
-                table: "Claims",
+                name: "IX_Auth_Claims_ClaimType_ClaimValue_ControllerName_ActionName_DisplayName",
+                table: "Auth_Claims",
                 columns: new[] { "ClaimType", "ClaimValue", "ControllerName", "ActionName", "DisplayName" },
                 unique: true,
                 filter: "[ClaimType] IS NOT NULL AND [ClaimValue] IS NOT NULL AND [ControllerName] IS NOT NULL AND [ActionName] IS NOT NULL AND [DisplayName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Auth_RoleClaims_ClaimId",
+                table: "Auth_RoleClaims",
+                column: "ClaimId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Auth_RoleClaims_RoleId",
+                table: "Auth_RoleClaims",
+                column: "RoleId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -249,16 +286,19 @@ namespace IdentitySample.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Claims");
+                name: "Auth_Domains");
 
             migrationBuilder.DropTable(
-                name: "Domains");
+                name: "Auth_RoleClaims");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Auth_Claims");
         }
     }
 }

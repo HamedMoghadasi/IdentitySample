@@ -33,7 +33,7 @@ namespace Authorization.Middlewares
                 {
                     var controllerName = $"{controllerActionDescriptor.ControllerName}Controller";
                     var actionName = controllerActionDescriptor.ActionName;
-                    var actionsClaims = _context.Claims.Where(i => i.ControllerName == controllerName && i.ActionName == actionName && i.ClaimType == GlobalClaimsType.Permission)
+                    var actionsClaims = _context.Auth_Claims.Where(i => i.ControllerName == controllerName && i.ActionName == actionName && i.ClaimType == GlobalClaimsType.Permission)
                         .AsNoTracking()
                         .AsEnumerable();
                     if (actionsClaims.Count() > 0 && httpContext.User.Identity.IsAuthenticated)
