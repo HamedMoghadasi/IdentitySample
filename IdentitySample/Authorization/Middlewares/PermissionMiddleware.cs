@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Authorization.Constants;
+using Authorization.Data;
+using Authorization.Rpositories;
 
 namespace Authorization.Middlewares
 {
@@ -22,7 +24,7 @@ namespace Authorization.Middlewares
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext httpContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ApplicationDbContext _context)
+        public async Task InvokeAsync(HttpContext httpContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IClaimsRepository claimsRepository,IRoleClaimRepository roleClaimRepository)
         {
             if (httpContext.GetEndpoint() != null) {
                 var hasClaims = new List<bool>();
@@ -33,9 +35,9 @@ namespace Authorization.Middlewares
                 {
                     var controllerName = $"{controllerActionDescriptor.ControllerName}Controller";
                     var actionName = controllerActionDescriptor.ActionName;
-                    var actionsClaims = _context.Auth_Claims.Where(i => i.ControllerName == controllerName && i.ActionName == actionName && i.ClaimType == GlobalClaimsType.Permission)
-                        .AsNoTracking()
-                        .AsEnumerable();
+
+                    var actionsClaims = claimsRepository.Find(i => i.ControllerName == controllerName && i.ActionName == actionName && i.ClaimType == GlobalClaimsType.Permission);
+
                     if (actionsClaims.Count() > 0 && httpContext.User.Identity.IsAuthenticated)
                     {
                         var userName = httpContext.User.Identity.Name;
@@ -45,10 +47,10 @@ namespace Authorization.Middlewares
                         foreach (var role in roles)
                         {
                             var identityRole = await roleManager.FindByNameAsync(role);
-                            var roleClaims = await roleManager.GetClaimsAsync(identityRole);
-                            roleClaims = roleClaims.Where(i => i.Type == GlobalClaimsType.Permission).ToList();
+                            var roleClaims = roleClaimRepository.GetClaims(identityRole);
+                            roleClaims = roleClaims.Where(i => i.ClaimType == GlobalClaimsType.Permission).ToList();
                             var actionsClaimsCount = actionsClaims.Count();
-                            var validClaims = roleClaims.Where(r => actionsClaims.Any(ac => ac.ClaimType == r.Type && ac.ClaimValue == r.Value));
+                            var validClaims = roleClaims.Where(r => actionsClaims.Any(ac => ac.ClaimType == r.ClaimType && ac.ClaimValue == r.ClaimValue));
                             hasClaims.Add(validClaims.Count() == actionsClaimsCount);
                         }
 

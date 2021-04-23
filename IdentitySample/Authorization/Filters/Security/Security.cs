@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Authorization.Models;
+using Authorization.Rpositories;
 
 namespace Authorization.Filters.Security
 {
@@ -14,18 +15,20 @@ namespace Authorization.Filters.Security
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ApplicationDbContext _context;
+        private readonly IClaimsRepository _claimsRepository;
+        private readonly IRoleClaimRepository _roleClaimRepository;
 
-        public Security(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IHttpContextAccessor httpContextAccessor, ApplicationDbContext context)
+        public Security(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IHttpContextAccessor httpContextAccessor, IClaimsRepository claimsRepository, IRoleClaimRepository roleClaimRepository)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _httpContextAccessor = httpContextAccessor;
-            _context = context;
+            _claimsRepository = claimsRepository;
+            _roleClaimRepository = roleClaimRepository;
         }
         public async Task<bool> IsGrantedAsync(string claimType, string claimValue)
         {
-            var isClaimExistedInDb = _context.Auth_Claims.Any(i => i.ClaimType == claimType && i.ClaimValue == claimValue);
+            var isClaimExistedInDb = _claimsRepository.GetAll().Any(i => i.ClaimType == claimType && i.ClaimValue == claimValue);
             if (!isClaimExistedInDb)
             {
                 return false;
@@ -41,8 +44,8 @@ namespace Authorization.Filters.Security
                 foreach (var role in roles)
                 {
                     var identityRole = await _roleManager.FindByNameAsync(role);
-                    var claims = await _roleManager.GetClaimsAsync(identityRole);
-                    hasClaims.Add(claims.Any(c => c.Type == claimType && c.Value == claimValue));
+                    var claims = _roleClaimRepository.GetClaims(identityRole);
+                    hasClaims.Add(claims.Any(c => c.ClaimType == claimType && c.ClaimValue == claimValue));
                 }
 
                 if (hasClaims.Any(i => i == true))
