@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Authorization.Models
 {
-    public class ModelBase<TKey>: IModelBase where TKey: struct
+    public class ModelBase<TKey>: IModelBase
     {
         [Key]
         public TKey Id { get; set; }

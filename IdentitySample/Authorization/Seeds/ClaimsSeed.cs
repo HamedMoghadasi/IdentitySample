@@ -46,6 +46,11 @@ namespace Authorization.Seeds
                 {
                     _claimsRepository.Add(item);
                 }
+                else if (IsModified(dbClaims, item)) 
+                {
+                    var targetClaim = GetModified(dbClaims,item);
+                    _claimsRepository.Update(targetClaim);
+                }
             }
             foreach (var item in removedClaimsFilters)
             {
@@ -58,9 +63,21 @@ namespace Authorization.Seeds
             _claimsRepository.SaveChanges();
         }
 
+        private Claims GetModified(IEnumerable<Claims> dbClaims, Claims item)
+        {
+            var targetClaim = dbClaims.FirstOrDefault(i => i.ControllerName == item.ControllerName && i.ActionName == item.ActionName && i.ClaimType == item.ClaimType && i.ClaimValue == item.ClaimValue);
+            targetClaim.DisplayName = item.DisplayName;
+            return targetClaim;
+        }
+
+        private bool IsModified(IEnumerable<Claims> dbClaims, Claims item)
+        {
+            return dbClaims.Any(i => i.ControllerName == item.ControllerName && i.ActionName == item.ActionName && i.ClaimType == item.ClaimType && i.ClaimValue == item.ClaimValue && i.DisplayName != item.DisplayName);
+        }
+
         private bool IsExisted(IEnumerable<Claims> dbClaims, Claims item)
         {
-            return dbClaims.Any(p => p.ControllerName == item.ControllerName && p.ActionName == item.ActionName && p.ClaimType == item.ClaimType && p.ClaimValue == item.ClaimValue);
+            return dbClaims.Any(i => i.ControllerName == item.ControllerName && i.ActionName == item.ActionName && i.ClaimType == item.ClaimType && i.ClaimValue == item.ClaimValue);
         }
 
         private void FindClaims(List<Claims> claims, IEnumerable<Type> controllers)

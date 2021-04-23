@@ -12,12 +12,13 @@ namespace IdentitySample.Controllers
     [Authorize]
     public class HomeController : Controller
     {
+        
         public IActionResult Index()
         {
             return View();
         }
 
-
+        
         [RazorPermission(RazorClaimsValue.AccessParagraph)]
         public IActionResult Privacy()
         {
