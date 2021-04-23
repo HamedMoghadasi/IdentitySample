@@ -15,7 +15,7 @@ namespace Authorization.Seeds
             EmailConfirmed = true,
             UserName = "superadmin@gmail.com",
         };
-        public static string DefaultPassword = "OrchidHM8632!";
+        public static string DefaultPassword = "orchidHM8632!";
         public static string DefaultDomain = "MobilityOne";
     }
 }
